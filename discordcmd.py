@@ -58,7 +58,7 @@ async def on_message(message):
                 else:
                     print(Fore.MAGENTA + "Aborted Trigger: Email Verification Support, due to \"badge\" contents of the message.\nUser: {}".format(message.author))
 
-    elif message.author != client.user: # Make it so you don't see your own messages :o
+    if message.author != client.user: # Make it so you don't see your own messages :o
         if message.server is None: # Private messages
             print(Fore.YELLOW + Style.BRIGHT + "{} [{}] {}: {}".format(message.timestamp, message.channel, message.author, message.content))
         elif client.user.id in message.content: # When you are pinged
