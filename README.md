@@ -20,6 +20,8 @@ Then rename your config sample to just config.ini
 $ mv config.sample.ini config.ini
 ```
 Next, configure the config (dw about true/false ok)
+
+The default config should be pretty straight forward. If you're using a token to login to discord, make sure tokenauth is 1, and then just paste your token in. If you're using email/password, disable tokenauth and put the username and password in instead.
 ```
 [default]
 debug = 0
@@ -32,7 +34,11 @@ username = username here (optional)
 email = email here if tokenAuth = 0
 password = password here if tokenAuth = 0
 ```
-The default config should be pretty straight forward. If you're using a token to login to discord, make sure tokenauth is 1, and then just paste your token in. If you're using email/password, disable tokenauth and put the username and password in instead.
+Finish up by installing requirements.txt, and then you're on your way.
+```
+$ pip3 install requirements.txt
+```
+Done!
 ```
 $ python3 discordcmd.py
 ```
