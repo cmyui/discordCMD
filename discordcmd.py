@@ -32,7 +32,7 @@ async def on_ready():
         for server in client.servers:
             if server.id == str(targetServerID):
                 targetServer = server
-                print('Found your target.\n')
+                print('Server found.\n')
             else:
                 return 'Sorry.. I couldn\'t find a server by that ID!'
 
@@ -100,6 +100,7 @@ async def on_ready():
                     targetUser.server_permissions.manage_webhooks,
                     targetUser.server_permissions.manage_emojis
                     ))
+
             """ Old ver
             print("------ User Perms ------")
             print("Permissions Bitwise: {}\n".format(targetUser.server_permissions.value))
@@ -132,7 +133,7 @@ async def on_ready():
             print("manage_emojis: {}".format(targetUser.server_permissions.manage_emojis))
             """
         else:
-            if debug:
+            if config['default']['debug'] == True:
                 print("Sorry.. I couldn't find a user by that ID.. Heres a bit of info:\n")
                 print("------ Debug ------")
                 print("Server:")
@@ -145,15 +146,24 @@ async def on_ready():
             else:
                 return "Sorry.. I couldn't find a user by that ID!"
 
-
     if config['default']['extras'] == True:
         # Really stupid, and incomplete stuff
         elif actionDesired.find("2"):
-            # 2. Post a message as the user
-            return False
+            # 2. Post a message as the user (in a server)
+            targetServerID = input('\nAlright. I\'ll need the server ID of the discord server you\'d like to post in.)
+            for server in client.servers:
+                if server.id == str(targetServerID):
+                    targetServer = server
+                    print('Server found.\n')
+                else:
+                    return 'Sorry.. I couldn\'t find a server by that ID!'
+
         elif actionDesired.find("3"):
-            # 3. DOX User (Currently Disabled)
-            return False
+            # 3. Open PM and send a message to a user
+            targetUserID = input('Whats their UserID? ')
+            client.start_private_message(targetUserID)
+            await client.send_message(targetUserID, 'Test')
+            return 'Complete'
         elif actionDesired.find("4"):
             # 4. Check bans in a specific server
             return False
