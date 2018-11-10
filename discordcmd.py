@@ -6,7 +6,7 @@ from colorama import init
 from colorama import Fore, Back, Style
 
 # Initialize colorama owo
-init()
+init(autoreset=True)
 
 # Discord Client
 client = discord.Client()
@@ -25,7 +25,7 @@ async def on_ready():
 # On exceptions, don't make the whole thing die :)
 @client.event
 async def on_error(event, *args):
-    print("\n\nOh shit, we ran into a problem.\n\nError: {}\nargs: {}\n\n".format(event, *args))
+    print(Fore.RED + "\n\nOh shit, we ran into a problem.\n\nError: {}\nargs: {}\n\n".format(event, *args))
 
 # On message event
 @client.event
@@ -47,11 +47,9 @@ async def on_message(message):
     """
     if client.user.id in message.content:
         print(Fore.CYAN + "{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
-        print(Fore.RESET)
     elif (config['discord']['username'] in message.content or
         client.user.name in message.content):
         print(Fore.GREEN + "{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
-        print(Fore.RESET)
     else:
         print("{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
     if message.content.startswith('$cmyui') and message.author == client.user:
