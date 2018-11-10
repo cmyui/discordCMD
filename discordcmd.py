@@ -45,15 +45,17 @@ async def on_message(message):
     "hosts file" in message.content):
         await client.send_message(message.channel, 'Hi, this is an automatic response as your message was assumed to be about: Hosts file showing as read-only mode.\n\nEnsure you are running the switcher as Administrator, and disable your anti-virus (or add the switcher as an exclusion) and try again. As mentioned before, this is triggered since the switcher edits a system file (hosts).\nIf it still does not work, feel free to edit your hosts file yourself by adding these to the bottom of your hosts file (found at "C:\\Windows\\System32\\Drivers\\etc") depending on the server you want. You will need to run notepad as admin, then use ctrl + o to open the file, as it is a system file.')
     """
-    if message.server is None: # Private messages
-        print(Fore.YELLOW + Style.BRIGHT + "{} | {}: {} | {}".format(message.channel, message.author, message.content, message.timestamp))
-    elif client.user.id in message.content: # When you are pinged
-        print(Fore.CYAN + Style.BRIGHT + "{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
-    elif (config['discord']['username'] in message.content.lower() and len(config['discord']['username']) > 1 or
-        client.user.name in message.content.lower()): # When your username is mentioned (either actual one, or custom set in configuration)
-        print(Fore.GREEN + Style.BRIGHT + "{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
-    else: # Regular message
-        print("{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
+    if message.author != client.user: # Make it so you don't see your own messages :o
+        if message.server is None: # Private messages
+            print(Fore.YELLOW + Style.BRIGHT + "{} [{}] {}: {}".format(message.timestamp, message.channel, message.author, message.content))
+        elif client.user.id in message.content: # When you are pinged
+            print(Fore.CYAN + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
+        elif (config['discord']['username'] in message.content.lower() and len(config['discord']['username']) > 1 or
+            client.user.name in message.content.lower()): # When your username is mentioned (either actual one, or custom set in configuration)
+            print(Fore.GREEN + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
+        else: # Regular message
+            print("{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
+
     if message.content.startswith('$cmyui') and message.author == client.user:
     # Our little list of possibilities..
         actionDesired = input("""\nWhat would you like to do today?
