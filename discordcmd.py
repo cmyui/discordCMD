@@ -149,7 +149,7 @@ async def on_ready():
     # Really stupid, and incomplete stuff
     elif actionDesired.find("2") and config['default']['extras'] == True:
         # 2. Post a message as the user (in a server)
-        targetServerID = input('\nAlright. I\'ll need the server ID of the discord server you\'d like to post in.)
+        targetServerID = input('\nAlright. I\'ll need the server ID of the discord server you\'d like to post in.')
         for server in client.servers:
             if server.id == str(targetServerID):
                 targetServer = server
