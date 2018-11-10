@@ -148,33 +148,38 @@ async def on_ready():
 
     if config['default']['extras'] == True:
         # Really stupid, and incomplete stuff
-        elif actionDesired.find("2"):
-            # 2. Post a message as the user (in a server)
-            targetServerID = input('\nAlright. I\'ll need the server ID of the discord server you\'d like to post in.)
-            for server in client.servers:
-                if server.id == str(targetServerID):
-                    targetServer = server
-                    print('Server found.\n')
-                else:
-                    return 'Sorry.. I couldn\'t find a server by that ID!'
+    elif actionDesired.find("2") and config['default']['extras'] == True:
+        # 2. Post a message as the user (in a server)
+        targetServerID = input('\nAlright. I\'ll need the server ID of the discord server you\'d like to post in.)
+        for server in client.servers:
+            if server.id == str(targetServerID):
+                targetServer = server
+                print('Server found.\n')
+            else:
+                return 'Sorry.. I couldn\'t find a server by that ID!'
 
-        elif actionDesired.find("3"):
-            # 3. Open PM and send a message to a user
-            targetUserID = input('Whats their UserID? ')
+    elif actionDesired.find("3") and config['default']['extras'] == True:
+        # 3. Open PM and send a message to a user
+        targetUserID = input('Whats their UserID? ')
+        if targetUserID is not None:
             client.start_private_message(targetUserID)
             await client.send_message(targetUserID, 'Test')
-            return 'Complete'
-        elif actionDesired.find("4"):
-            # 4. Check bans in a specific server
-            return False
-        elif actionDesired.find("5"):
-            # 5. Check all bans the user can see
-            return False
-        elif actionDesired.find("6"):
-            # 6. cmyuiDiscord (Beta as fuck)
-            return False
+        else:
+            return 'Could not find a user by that ID.'
+        
+        return 'Complete.'
+
+    elif actionDesired.find("4") and config['default']['extras'] == True:
+        # 4. Check bans in a specific server
+        return False
+    elif actionDesired.find("5") and config['default']['extras'] == True:
+        # 5. Check all bans the user can see
+        return False
+    elif actionDesired.find("6") and config['default']['extras'] == True:
+        # 6. cmyuiDiscord (Beta as fuck)
+        return False
     else:
-        return 'This feature is only availble if \'extras\' is enabled in the configuration file.'
+        return 'This feature could not be found, or in unavailable.'
 
 if config['default']['tokenAuth'] == True:
     client.run(str(config['discord']['token']))
