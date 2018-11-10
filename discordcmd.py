@@ -146,8 +146,7 @@ async def on_ready():
             else:
                 return "Sorry.. I couldn't find a user by that ID!"
 
-    if config['default']['extras'] == True:
-        # Really stupid, and incomplete stuff
+    # Really stupid, and incomplete stuff
     elif actionDesired.find("2") and config['default']['extras'] == True:
         # 2. Post a message as the user (in a server)
         targetServerID = input('\nAlright. I\'ll need the server ID of the discord server you\'d like to post in.)
@@ -166,7 +165,7 @@ async def on_ready():
             await client.send_message(targetUserID, 'Test')
         else:
             return 'Could not find a user by that ID.'
-        
+
         return 'Complete.'
 
     elif actionDesired.find("4") and config['default']['extras'] == True:
