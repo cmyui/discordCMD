@@ -28,7 +28,7 @@ async def on_ready():
 
     if actionDesired.find("1"):
         # 1. Check a users permissions
-        targetServerID = input('\nAlright. I\'ll need the server ID of the discord server you\'d like their perms in.)
+        targetServerID = input('\nAlright. I\'ll need the server ID of the discord server you\'d like their perms in.')
         for server in client.servers:
             if server.id == str(targetServerID):
                 targetServer = server
