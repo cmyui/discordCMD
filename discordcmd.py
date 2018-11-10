@@ -56,11 +56,11 @@ async def on_message(message):
         print("{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
     if message.content.startswith('$cmyui') and message.author == client.user:
     # Our little list of possibilities..
-            actionDesired = input("""\nWhat would you like to do today?
-                                    \n1. Check a users permissions
-                                    \n2. Send messages to a server channel
-                                    \n3. Send messages in PMs
-                                    \n>> """)
+        actionDesired = input("""\nWhat would you like to do today?
+                                \n1. Check a users permissions
+                                \n2. Send messages to a server channel
+                                \n3. Send messages in PMs
+                                \n>> """)
 
         actionDesiredInt = int(re.search(r'\d+', actionDesired).group())
         if int(config['default']['debug']) == 1:
