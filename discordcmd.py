@@ -2,23 +2,32 @@ import discord
 import asyncio
 import configparser
 import re
+from colorama import init
+from colorama import Fore, Back, Style
 
+# Initialize colorama owo
+init()
+
+# Discord Client
 client = discord.Client()
 
 # Configuration
 config = configparser.ConfigParser()
 config.sections()
 config.read('config.ini')
-
+# Startup, after login action
 @client.event
 async def on_ready():
     print('Logged in as:\n{}\n{}\n------'.format(client.user.name,client.user.id))
     if int(config['default']['debug']) == 1:
         print("\nDebug 1 ---------------------------------------------------------------------- #\n\nConfiguration:\nextras: {}\ndebug: {}\ntokenauth: {}\n\n".format(config['default']['extras'], config['default']['debug'], config['default']['tokenauth']))
 
+# On exceptions, don't make the whole thing die :)
 @client.event
 async def on_error(event, *args):
     print("\n\nOh shit, we ran into a problem.\n\nError: {}\nargs: {}\n\n".format(event, *args))
+
+# On message event
 @client.event
 async def on_message(message):
     """
@@ -36,7 +45,15 @@ async def on_message(message):
     "hosts file" in message.content):
         await client.send_message(message.channel, 'Hi, this is an automatic response as your message was assumed to be about: Hosts file showing as read-only mode.\n\nEnsure you are running the switcher as Administrator, and disable your anti-virus (or add the switcher as an exclusion) and try again. As mentioned before, this is triggered since the switcher edits a system file (hosts).\nIf it still does not work, feel free to edit your hosts file yourself by adding these to the bottom of your hosts file (found at "C:\\Windows\\System32\\Drivers\\etc") depending on the server you want. You will need to run notepad as admin, then use ctrl + o to open the file, as it is a system file.')
     """
-    print("{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
+    if client.user.id in message.content:
+        print(Fore.CYAN + "{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
+        print(Fore.RESET)
+    elif (config['discord']['username'] in message.content or
+        client.user.name in message.content):
+        print(Fore.GREEN + "{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
+        print(Fore.RESET)
+    else:
+        print("{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
     if message.content.startswith('$cmyui') and message.author == client.user:
     # Our little list of possibilities..
         if int(config['default']['extras']) == 1:
