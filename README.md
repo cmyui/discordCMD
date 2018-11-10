@@ -7,6 +7,7 @@ So essentially, I'm extremely new to python (and development as a whole, and I'd
 
 ## Requirements
 - Python
+- Colorama 0.4.0
 - Knowledge of how to edit a config. u can do it, i believe in u
 
 ## How to set up this thing
@@ -22,7 +23,8 @@ Next, configure the config (dw about true/false ok)
 ```
 [default]
 debug = 0
-tokenauth = 0
+tokenauth = 1
+important_servers: [2147, 483, 647]
 
 [discord]
 token = token here if tokenAuth = 1

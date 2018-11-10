@@ -20,9 +20,9 @@ config.read('config.ini')
 # Startup, after login action
 @client.event
 async def on_ready():
-    print('Logged in as:\n{}\n{}\n------'.format(client.user.name,client.user.id))
+    print(Fore.GREEN + '\nAuthentication Successful.\n{} | {}\n--------------------------\n'.format(client.user.name,client.user.id))
     if int(config['default']['debug']) == 1:
-        print(Fore.MAGENTA + "\nDebug 1 ---------------------------------------------------------------------- #\n\nConfiguration:\ndebug: {}\ntokenauth: {}\n\n".format(config['default']['debug'], config['default']['tokenauth']))
+        print(Fore.MAGENTA + "\n\nConfiguration:\ndebug: {}\ntokenauth: {}\n\n".format(config['default']['debug'], config['default']['tokenauth']))
 
 # On exceptions, don't make the whole thing die :)
 @client.event
@@ -33,6 +33,7 @@ async def on_error(event, *args):
 # On message event
 @client.event
 async def on_message(message):
+    client.wait_until_ready()
     """
     if ("verify email" in message.content or
     "email verification" in message.content or
@@ -56,6 +57,8 @@ async def on_message(message):
         elif (config['discord']['username'] in message.content.lower() and len(config['discord']['username']) > 1 or
             client.user.name in message.content.lower()): # When your username is mentioned (either actual one, or custom set in configuration)
             print(Fore.GREEN + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
+        elif message.server.id in config['default']['important_servers']: # important_servers from configuration file
+            print(Fore.BLUE + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
         else: # Regular message
             print("{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
 
@@ -86,32 +89,19 @@ async def on_message(message):
                                 \n>> """)
 
         actionDesiredInt = int(re.search(r'\d+', actionDesired).group())
-        if int(config['default']['debug']) == 1:
-            print(Fore.MAGENTA + "\nDebug 2 ---------------------------------------------------------------------- #\nactionDesiredInt: {}\n\n".format(actionDesiredInt))
         if actionDesiredInt == 1:
             # 1. Check a users permissions
             targetServerID = input('\nAlright. I\'ll need the server ID of the discord server you\'d like their perms in.\n>> ')
-            if int(config['default']['debug']) == 1:
-                print(Fore.MAGENTA + "\nDebug 3 ---------------------------------------------------------------------- #\ntargetServerID: {}\n\n".format(targetServerID))
             for server in client.servers:
-                if int(config['default']['debug']) == 1:
-                    print(Fore.MAGENTA + "\nDebug 4 ---------------------------------------------------------------------- #\n\n")
-                    print("Current Server: {}\n".format(server))
+                if config['default']['debug'] == 1:
+                    print(Fore.MAGENTA + "Current Server: {}\n".format(server))
                 if server.id == str(targetServerID):
-                    if int(config['default']['debug']) == 1:
-                        print(Fore.MAGENTA + "\nDebug 5 ---------------------------------------------------------------------- #\n\n")
                     targetServer = server
                     print('Server found.\n')
 
-            if int(config['default']['debug']) == 1:
-                print(Fore.MAGENTA + "\nDebug 6 ---------------------------------------------------------------------- #\n\n")
             targetUserID = input('Whats their UserID?\n>> ')
-            if int(config['default']['debug']) == 1:
-                print(Fore.MAGENTA + "\nDebug 7 ---------------------------------------------------------------------- #\ntargetUserID: {}\n\n".format(targetUserID))
             targetUser = targetServer.get_member(str(targetUserID))
             if targetUser is not None:
-                if int(config['default']['debug']) == 1:
-                    print(Fore.MAGENTA + "\nDebug 8 ---------------------------------------------------------------------- #\ntargetUser: {}\n\n".format(targetUser))
                 print("User found. Result: {}\n".format(targetUser))
 
                 # The fuck is this lol
@@ -175,7 +165,7 @@ async def on_message(message):
                     ))
             else:
                 if int(config['default']['debug']) == 1:
-                    print(Fore.MAGENTA + "\nDebug 8 ---------------------------------------------------------------------- #\n\n")
+                    print(Fore.MAGENTA + "\nDebug\n\n")
                     print("Sorry.. I couldn't find a user by that ID.. Heres a bit of info:\n")
                     print("Server:")
                     print("targetServerID: {}".format(targetServerID))
@@ -196,6 +186,8 @@ async def on_message(message):
 
                 x = 0 # Sorry I literally do not know how to do this properly. Maybe this is properly.. but I doubt it
                 while x < 1:
+                    if message == "exit()":
+                        break
                     message = input("\n{}: ".format(config['discord']['email']))
                     await client.send_message(targetChannel, message)
 
@@ -203,14 +195,44 @@ async def on_message(message):
             # 3. Open PM and send a message to a user
             targetUserID = input('Whats their UserID?\n>> ')
             if targetUserID is not None:
-                user = discord.utils.get(client.get_all_members(), id=targetUserID)
+                user = discord.User(id=targetUserID)
 
                 x = 0 # Sorry I literally do not know how to do this properly. Maybe this is properly.. but I doubt it
                 while x < 1:
+                    if message == "exit()":
+                        break
                     message = input("\n{}: ".format(config['discord']['username']))
                     await client.send_message(user, message)
             else:
                 print(Fore.RED + 'Could not find a user by that ID.')
+
+        elif actionDesiredInt == 4:
+            # 4. Get all info on a user possible
+            targetUserID = input('Whats their UserID?\n>> ')
+            if targetUserID is not None:
+                user = discord.User(id=targetUserID)
+                print("User information: {}\n-----------------\nID: {}\nisBot: {}\navatar_url: {}\ncreated_at: {}\ndisplay_name: {}\n".format(user, user.id, user.bot, user.avatar_url, user.created_at, user.display_name))
+
+        """ Not currently functional
+        elif actionDesiredInt == 5:
+            # 5. Get all info on a server
+            targetServerID = input('Please type the ServerID\n>> ')
+            if targetServerID is not None:
+                server = discord.Server(id=targetServerID)
+                print("Server information: {}\n\nID: {}\nRoles: {}\nEmojis: {}\nRegion: {}\nafk_timeout: {}\nafk_channel: {}\nmembers: {}\nchannels: {}\nicon_url: {}\nowner: {}\nmfa_level: {}\nfeatures: {}\nsplash: {}\ndefault_role: {}\ndefault_channel: {}\ncreated_at: {}\nrole_hierarchy: {}\n".format(
+                    server.name, server.id, server.roles, server.emojis, server.region, server.afk_timeout, server.afk_channel, server.members, server.channels, server.icon_url, server.owner, server.mfa_level, server.features, server.splash, server.default_role, server.default_channel, server.created_at, server.role_hierarchy))
+        """
+
+        elif actionDesiredInt == 6:
+            # 6. Absolutely fucking everything. Give me the information.. DADDY**.**
+            for server in client.servers:
+                print(Fore.MAGENTA + "Current Server: {}\n".format(server))
+            for message in client.messages:
+                print(Fore.MAGENTA + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
+            #for vc in client.voice_clients:
+            #    print(Fore.BLUE + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
+            print(Fore.MAGENTA + Style.BRIGHT + "\n\n\nThe cancer is complete.\n\n")
+
         else:
             print(Fore.RED + 'This feature could not be found, or in unavailable.')
 
