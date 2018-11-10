@@ -20,7 +20,7 @@ config.read('config.ini')
 async def on_ready():
     print('Logged in as:\n{}\n{}\n------'.format(client.user.name,client.user.id))
     if int(config['default']['debug']) == 1:
-        print("\nDebug 1 ---------------------------------------------------------------------- #\n\nConfiguration:\nextras: {}\ndebug: {}\ntokenauth: {}\n\n".format(config['default']['extras'], config['default']['debug'], config['default']['tokenauth']))
+        print("\nDebug 1 ---------------------------------------------------------------------- #\n\nConfiguration:\ndebug: {}\ntokenauth: {}\n\n".format(config['default']['debug'], config['default']['tokenauth']))
 
 # On exceptions, don't make the whole thing die :)
 @client.event
@@ -45,22 +45,17 @@ async def on_message(message):
     "hosts file" in message.content):
         await client.send_message(message.channel, 'Hi, this is an automatic response as your message was assumed to be about: Hosts file showing as read-only mode.\n\nEnsure you are running the switcher as Administrator, and disable your anti-virus (or add the switcher as an exclusion) and try again. As mentioned before, this is triggered since the switcher edits a system file (hosts).\nIf it still does not work, feel free to edit your hosts file yourself by adding these to the bottom of your hosts file (found at "C:\\Windows\\System32\\Drivers\\etc") depending on the server you want. You will need to run notepad as admin, then use ctrl + o to open the file, as it is a system file.')
     """
-    if client.user.id in message.content:
-        print(Fore.CYAN + "{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
-    elif (config['discord']['username'] in message.content or
-        client.user.name in message.content):
-        print(Fore.GREEN + "{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
-    else:
+    if message.server is None: # Private messages
+        print(Fore.YELLOW + Style.BRIGHT + "{} | {}: {} | {}".format(message.channel, message.author, message.content, message.timestamp))
+    elif client.user.id in message.content: # When you are pinged
+        print(Fore.CYAN + Style.BRIGHT + "{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
+    elif (config['discord']['username'] in message.content.lower() and len(config['discord']['username']) > 1 or
+        client.user.name in message.content.lower()): # When your username is mentioned (either actual one, or custom set in configuration)
+        print(Fore.GREEN + Style.BRIGHT + "{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
+    else: # Regular message
         print("{} ({}) | {}: {} | {}".format(message.server, message.channel, message.author, message.content, message.timestamp))
     if message.content.startswith('$cmyui') and message.author == client.user:
     # Our little list of possibilities..
-        if int(config['default']['extras']) == 1:
-            actionDesired = input("""\nWhat would you like to do today?
-                                    \n1. Check a users permissions
-                                    \n2. Send messages to a server channel
-                                    \n3. Send messages in PMs
-                                    \n>> """) # One day there will be more I swear
-        else:
             actionDesired = input("""\nWhat would you like to do today?
                                     \n1. Check a users permissions
                                     \n2. Send messages to a server channel
@@ -195,8 +190,6 @@ async def on_message(message):
                     await client.send_message(user, message)
             else:
                 return 'Could not find a user by that ID.'
-
-        # elif actionDesiredInt == 4 and int(config['default']['extras']) == 1:
         else:
             return 'This feature could not be found, or in unavailable.'
 

@@ -22,11 +22,11 @@ Next, configure the config (dw about true/false ok)
 ```
 [default]
 debug = 0
-tokenauth = 1
-extras = 0
+tokenauth = 0
 
 [discord]
 token = token here if tokenAuth = 1
+username = username here (optional)
 email = email here if tokenAuth = 0
 password = password here if tokenAuth = 0
 ```
