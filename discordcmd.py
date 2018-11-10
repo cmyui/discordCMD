@@ -67,7 +67,11 @@ async def on_message(message):
             client.user.name in message.content.lower()): # When your username is mentioned (either actual one, or custom set in configuration)
             print(Fore.GREEN + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
         elif message.server.id in config['default']['important_servers']: # important_servers from configuration file
-            print(Fore.BLUE + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
+            if message.channel.id == '508022888113111040':
+                #play my fucking audio file here when thats a thing
+                print(Back.CYAN + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
+            else:
+                print(Fore.BLUE + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
         else: # Regular message
             print("{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
 
