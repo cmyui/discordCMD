@@ -26,7 +26,6 @@ async def on_ready():
 
 # On exceptions, don't make the whole thing die :)
 @client.event
-
 async def on_error(event, *args):
     print(Fore.RED + "\n\nFuck.\n\nError: {}\nargs: {}\n\nTraceback: {}\n".format(event, *args, logging.warning(traceback.format_exc())))
 
@@ -34,22 +33,32 @@ async def on_error(event, *args):
 @client.event
 async def on_message(message):
     client.wait_until_ready()
-    """
-    if ("verify email" in message.content or
-    "email verification" in message.content or
-    "verify my email" in message.content or
-    "verification" in message.content or
-    "verify akatsuki" in message.content or
-    "verify account" in message.content):
-        await client.send_message(message.channel, 'Hi, this is an automatic response as your message was assumed to be about: Email verification.\n\nAs the verification page says, Akatsuki does not use verification emails. To verify your account, simply install the switcher, install the certificate, click the server you\'d like to play on, and click On/Off, then login to osu! to complete the verification process.\n\nIf this was not the point of your message, or this was not helpful, cmyui will likely check this soon owo.')
-    elif ("error writing" in message.content or
-    "read only" in message.content or
-    "readonly" in message.content or
-    "read-only" in message.content or
-    "hosts file" in message.content):
-        await client.send_message(message.channel, 'Hi, this is an automatic response as your message was assumed to be about: Hosts file showing as read-only mode.\n\nEnsure you are running the switcher as Administrator, and disable your anti-virus (or add the switcher as an exclusion) and try again. As mentioned before, this is triggered since the switcher edits a system file (hosts).\nIf it still does not work, feel free to edit your hosts file yourself by adding these to the bottom of your hosts file (found at "C:\\Windows\\System32\\Drivers\\etc") depending on the server you want. You will need to run notepad as admin, then use ctrl + o to open the file, as it is a system file.')
-    """
-    if message.author != client.user: # Make it so you don't see your own messages :o
+    if config['discord']['username'] == 'cmyui': # Useless stuff only I would want lol
+        if ("verify e" in message.content.lower() or
+        "verification" in message.content.lower() or
+        "verify m" in message.content.lower() or
+        "verify a" in message.content.lower() or
+        "email t" in message.content.lower()) and message.author != client.user:
+
+            # I really don't know how to do this :(
+            # Private Messaging
+            if message.server is None:
+                if "badge" not in message.content.lower():
+                    await client.send_message(message.author, 'Right, this is an automated message as it was presumed your message was about: Email Verification\n\nAs the verification page says, Akatsuki does not use verification emails. To verify your account, simply install the switcher, install the certificate, click the server you\'d like to play on, and click On/Off, then login to osu! to complete the verification process.')
+                    if int(config['default']['debug']) == 1:
+                        print(Fore.MAGENTA + "Triggered: Verification Email Support\nUser: {}".format(message.author))
+                else:
+                    print(Fore.MAGENTA + "Aborted Trigger: Email Verification Support, due to \"badge\" contents of the message.\nUser: {}".format(message.author))
+            # Akatsuki's ServerID
+            elif message.server.id == '365406575893938177':
+                if "badge" not in message.content.lower():
+                    await client.send_message(message.author, 'Right, this is an automated message as it was assumed you needed assitance in Akatsuki with: Email Verification\n\nAs the verification page says, Akatsuki does not use verification emails. To verify your account, simply install the switcher, install the certificate, click the server you\'d like to play on, and click On/Off, then login to osu! to complete the verification process.')
+                    if int(config['default']['debug']) == 1:
+                        print(Fore.MAGENTA + "Triggered: Verification Email Support\nUser: {}".format(message.author))
+                else:
+                    print(Fore.MAGENTA + "Aborted Trigger: Email Verification Support, due to \"badge\" contents of the message.\nUser: {}".format(message.author))
+
+    elif message.author != client.user: # Make it so you don't see your own messages :o
         if message.server is None: # Private messages
             print(Fore.YELLOW + Style.BRIGHT + "{} [{}] {}: {}".format(message.timestamp, message.channel, message.author, message.content))
         elif client.user.id in message.content: # When you are pinged
@@ -62,7 +71,7 @@ async def on_message(message):
         else: # Regular message
             print("{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
 
-    if message.content.startswith('$s') and message.author == client.user:
+    elif message.content.startswith('$s') and message.author == client.user:
     # Change your discord users status / game
         game = ''.join(message.content[3:]).strip() # Get the game
 
@@ -80,13 +89,15 @@ async def on_message(message):
         else:
             print(Fore.RED + Style.BRIGHT + "Please specify a game name.")
 
-    if message.content.startswith('$c') and message.author == client.user:
+    elif message.content.startswith('$c') and message.author == client.user:
     # Our little list of possibilities..
         actionDesired = input("""\nWhat would you like to do today?
                                 \n1. Check a users permissions
                                 \n2. Send messages to a server channel
                                 \n3. Send messages in PMs
-                                \n>> """)
+                                \n4. Get all info on a user possible
+                                \n5. Absolutely fucking everything. Give me the information.. DADDY**.**
+                                \n>> """) # just dont fuck with 5 yet c:
 
         actionDesiredInt = int(re.search(r'\d+', actionDesired).group())
         if actionDesiredInt == 1:
@@ -102,10 +113,9 @@ async def on_message(message):
             targetUserID = input('Whats their UserID?\n>> ')
             targetUser = targetServer.get_member(str(targetUserID))
             if targetUser is not None:
-                print("User found. Result: {}\n".format(targetUser))
-
                 # The fuck is this lol
-                print("""------ User Perms ------\n
+                print("""User found. Result: {}\n
+                    ------- User Perms -------\n
                     Permissions Bitwise: {}\n
                     create_instant_invite: {}\n
                     kick members: {}\n
@@ -134,6 +144,7 @@ async def on_message(message):
                     manage_roles: {}\n
                     manage_webhooks: {}\n
                     manage_emojis: {}""".format(
+                    targetUser,
                     targetUser.server_permissions.value,
                     targetUser.server_permissions.create_instant_invite,
                     targetUser.server_permissions.kick_members,
@@ -164,17 +175,7 @@ async def on_message(message):
                     targetUser.server_permissions.manage_emojis
                     ))
             else:
-                if int(config['default']['debug']) == 1:
-                    print(Fore.MAGENTA + "\nDebug\n\n")
-                    print("Sorry.. I couldn't find a user by that ID.. Heres a bit of info:\n")
-                    print("Server:")
-                    print("targetServerID: {}".format(targetServerID))
-                    print("targetServer: {}\n".format(targetServer))
-                    print("User:")
-                    print("targetUserID: {}".format(targetUserID))
-                    print("targetUser: {}\n\n".format(targetUser))
-                else:
-                    print(Fore.RED + "Sorry.. I couldn't find a user by that ID!")
+                print(Fore.RED + "Sorry.. I couldn't find a user by that ID!")
 
         # Really stupid, and incomplete stuff
         elif actionDesiredInt == 2:
@@ -213,18 +214,8 @@ async def on_message(message):
                 user = discord.User(id=targetUserID)
                 print("User information: {}\n-----------------\nID: {}\nisBot: {}\navatar_url: {}\ncreated_at: {}\ndisplay_name: {}\n".format(user, user.id, user.bot, user.avatar_url, user.created_at, user.display_name))
 
-        """ Not currently functional
         elif actionDesiredInt == 5:
-            # 5. Get all info on a server
-            targetServerID = input('Please type the ServerID\n>> ')
-            if targetServerID is not None:
-                server = discord.Server(id=targetServerID)
-                print("Server information: {}\n\nID: {}\nRoles: {}\nEmojis: {}\nRegion: {}\nafk_timeout: {}\nafk_channel: {}\nmembers: {}\nchannels: {}\nicon_url: {}\nowner: {}\nmfa_level: {}\nfeatures: {}\nsplash: {}\ndefault_role: {}\ndefault_channel: {}\ncreated_at: {}\nrole_hierarchy: {}\n".format(
-                    server.name, server.id, server.roles, server.emojis, server.region, server.afk_timeout, server.afk_channel, server.members, server.channels, server.icon_url, server.owner, server.mfa_level, server.features, server.splash, server.default_role, server.default_channel, server.created_at, server.role_hierarchy))
-        """
-
-        elif actionDesiredInt == 6:
-            # 6. Absolutely fucking everything. Give me the information.. DADDY**.**
+            # 5. Absolutely fucking everything. Give me the information.. DADDY**.**
             for server in client.servers:
                 print(Fore.MAGENTA + "Current Server: {}\n".format(server))
             for message in client.messages:
@@ -236,12 +227,11 @@ async def on_message(message):
         else:
             print(Fore.RED + 'This feature could not be found, or in unavailable.')
 
-# Ok this is a bit sketchy
 if int(config['default']['tokenauth']) == 1:
     if int(config['default']['debug']) == 1:
-        print(Fore.MAGENTA + "Logging in with credentials: {}".format(config['discord']['token']))
+        print(Fore.MAGENTA + "Logging in with credentials: {}".format('*' * len(config['discord']['token'])))
     client.run(str(config['discord']['token']))
 elif int(config['default']['tokenauth']) == 0:
     if int(config['default']['debug']) == 1:
-        print(Fore.MAGENTA + "Logging in with credentials: {}, {}".format(config['discord']['email'], config['discord']['password']))
+        print(Fore.MAGENTA + "Logging in with credentials: {}, {}".format(config['discord']['email'], '*' * len(config['discord']['password'])))
     client.run('{}'.format(config['discord']['email']), '{}'.format(config['discord']['password']))
