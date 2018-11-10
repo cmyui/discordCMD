@@ -2,6 +2,8 @@ import discord
 import asyncio
 import configparser
 import re
+import logging
+import traceback
 from colorama import init
 from colorama import Fore, Back, Style
 
@@ -20,12 +22,13 @@ config.read('config.ini')
 async def on_ready():
     print('Logged in as:\n{}\n{}\n------'.format(client.user.name,client.user.id))
     if int(config['default']['debug']) == 1:
-        print("\nDebug 1 ---------------------------------------------------------------------- #\n\nConfiguration:\ndebug: {}\ntokenauth: {}\n\n".format(config['default']['debug'], config['default']['tokenauth']))
+        print(Fore.MAGENTA + "\nDebug 1 ---------------------------------------------------------------------- #\n\nConfiguration:\ndebug: {}\ntokenauth: {}\n\n".format(config['default']['debug'], config['default']['tokenauth']))
 
 # On exceptions, don't make the whole thing die :)
 @client.event
+
 async def on_error(event, *args):
-    print(Fore.RED + "\n\nOh shit, we ran into a problem.\n\nError: {}\nargs: {}\n\n".format(event, *args))
+    print(Fore.RED + "\n\nFuck.\n\nError: {}\nargs: {}\n\nTraceback: {}\n".format(event, *args, logging.warning(traceback.format_exc())))
 
 # On message event
 @client.event
@@ -56,7 +59,25 @@ async def on_message(message):
         else: # Regular message
             print("{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
 
-    if message.content.startswith('$cmyui') and message.author == client.user:
+    if message.content.startswith('$s') and message.author == client.user:
+    # Change your discord users status / game
+        game = ''.join(message.content[3:]).strip() # Get the game
+
+        if game is not None: # Game also changed
+
+            """
+            game Variables:
+            name = name of the game
+            url = link for the game (usually for streaming probably)
+            type = boolean to show whether streaming or not
+            """
+            await client.change_presence(game=discord.Game(name=game, url='https://akatsuki.pw/', type=0))
+
+            print(Fore.GREEN + Style.BRIGHT + "Game changed to: {}".format(game))
+        else:
+            print(Fore.RED + Style.BRIGHT + "Please specify a game name.")
+
+    if message.content.startswith('$c') and message.author == client.user:
     # Our little list of possibilities..
         actionDesired = input("""\nWhat would you like to do today?
                                 \n1. Check a users permissions
@@ -66,32 +87,31 @@ async def on_message(message):
 
         actionDesiredInt = int(re.search(r'\d+', actionDesired).group())
         if int(config['default']['debug']) == 1:
-            print("\nDebug 2 ---------------------------------------------------------------------- #\nactionDesiredInt: {}\n\n".format(actionDesiredInt))
+            print(Fore.MAGENTA + "\nDebug 2 ---------------------------------------------------------------------- #\nactionDesiredInt: {}\n\n".format(actionDesiredInt))
         if actionDesiredInt == 1:
             # 1. Check a users permissions
             targetServerID = input('\nAlright. I\'ll need the server ID of the discord server you\'d like their perms in.\n>> ')
             if int(config['default']['debug']) == 1:
-                print("\nDebug 3 ---------------------------------------------------------------------- #\ntargetServerID: {}\n\n".format(targetServerID))
+                print(Fore.MAGENTA + "\nDebug 3 ---------------------------------------------------------------------- #\ntargetServerID: {}\n\n".format(targetServerID))
             for server in client.servers:
                 if int(config['default']['debug']) == 1:
-                    print("\nDebug 4 ---------------------------------------------------------------------- #\n\n")
+                    print(Fore.MAGENTA + "\nDebug 4 ---------------------------------------------------------------------- #\n\n")
                     print("Current Server: {}\n".format(server))
                 if server.id == str(targetServerID):
                     if int(config['default']['debug']) == 1:
-                        print("\nDebug 5 ---------------------------------------------------------------------- #\n\n")
+                        print(Fore.MAGENTA + "\nDebug 5 ---------------------------------------------------------------------- #\n\n")
                     targetServer = server
                     print('Server found.\n')
 
-
             if int(config['default']['debug']) == 1:
-                print("\nDebug 6 ---------------------------------------------------------------------- #\n\n")
+                print(Fore.MAGENTA + "\nDebug 6 ---------------------------------------------------------------------- #\n\n")
             targetUserID = input('Whats their UserID?\n>> ')
             if int(config['default']['debug']) == 1:
-                print("\nDebug 7 ---------------------------------------------------------------------- #\ntargetUserID: {}\n\n".format(targetUserID))
+                print(Fore.MAGENTA + "\nDebug 7 ---------------------------------------------------------------------- #\ntargetUserID: {}\n\n".format(targetUserID))
             targetUser = targetServer.get_member(str(targetUserID))
             if targetUser is not None:
                 if int(config['default']['debug']) == 1:
-                    print("\nDebug 8 ---------------------------------------------------------------------- #\ntargetUser: {}\n\n".format(targetUser))
+                    print(Fore.MAGENTA + "\nDebug 8 ---------------------------------------------------------------------- #\ntargetUser: {}\n\n".format(targetUser))
                 print("User found. Result: {}\n".format(targetUser))
 
                 # The fuck is this lol
@@ -154,9 +174,8 @@ async def on_message(message):
                     targetUser.server_permissions.manage_emojis
                     ))
             else:
-
                 if int(config['default']['debug']) == 1:
-                    print("\nDebug 8 ---------------------------------------------------------------------- #\n\n")
+                    print(Fore.MAGENTA + "\nDebug 8 ---------------------------------------------------------------------- #\n\n")
                     print("Sorry.. I couldn't find a user by that ID.. Heres a bit of info:\n")
                     print("Server:")
                     print("targetServerID: {}".format(targetServerID))
@@ -165,7 +184,7 @@ async def on_message(message):
                     print("targetUserID: {}".format(targetUserID))
                     print("targetUser: {}\n\n".format(targetUser))
                 else:
-                    return "Sorry.. I couldn't find a user by that ID!"
+                    print(Fore.RED + "Sorry.. I couldn't find a user by that ID!")
 
         # Really stupid, and incomplete stuff
         elif actionDesiredInt == 2:
@@ -188,19 +207,19 @@ async def on_message(message):
 
                 x = 0 # Sorry I literally do not know how to do this properly. Maybe this is properly.. but I doubt it
                 while x < 1:
-                    message = input("\n{}: ".format(config['discord']['email']))
+                    message = input("\n{}: ".format(config['discord']['username']))
                     await client.send_message(user, message)
             else:
-                return 'Could not find a user by that ID.'
+                print(Fore.RED + 'Could not find a user by that ID.')
         else:
-            return 'This feature could not be found, or in unavailable.'
+            print(Fore.RED + 'This feature could not be found, or in unavailable.')
 
 # Ok this is a bit sketchy
 if int(config['default']['tokenauth']) == 1:
     if int(config['default']['debug']) == 1:
-        print("Input: {}".format(config['discord']['token']))
+        print(Fore.MAGENTA + "Logging in with credentials: {}".format(config['discord']['token']))
     client.run(str(config['discord']['token']))
 elif int(config['default']['tokenauth']) == 0:
     if int(config['default']['debug']) == 1:
-        print('Input: {}, {}'.format(config['discord']['email'], config['discord']['password']))
+        print(Fore.MAGENTA + "Logging in with credentials: {}, {}".format(config['discord']['email'], config['discord']['password']))
     client.run('{}'.format(config['discord']['email']), '{}'.format(config['discord']['password']))
