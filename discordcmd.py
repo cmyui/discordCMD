@@ -21,10 +21,6 @@ async def on_ready():
         actionDesired = input("""\nWhat would you like to do today?
                                 \n1. Check a users permissions
                                 \n2. Post a message as the user
-                                \n3. DOX User (Currently Disabled)
-                                \n4. Check bans in a specific server
-                                \n5. Check all bans the user can see
-                                \n6. cmyuiDiscord (Beta as fuck)
                                 \n>> """)
     else:
         actionDesired = input("""\nWhat would you like to do today?
@@ -151,22 +147,17 @@ async def on_ready():
         # 3. Open PM and send a message to a user
         targetUserID = input('Whats their UserID?\n>> ')
         if targetUserID is not None:
-            client.start_private_message(targetUserID)
-            await client.send_message(message.channel, 'Test')
+            user = discord.utils.get(client.get_all_members(), id=targetUserID)
+
+            x = 0 # Sorry I literally do not know how to do this properly. Maybe this is properly.. but I doubt it
+            while x < 1:
+                message = input("\n{}: ".format(config['discord']['email']))
+                await client.send_message(user, message)
         else:
             return 'Could not find a user by that ID.'
 
         return 'Complete.'
 
-    elif actionDesiredInt == 4 and int(config['default']['extras']) == 1:
-        # 4. Check bans in a specific server
-        return False
-    elif actionDesiredInt == 5 and int(config['default']['extras']) == 1:
-        # 5. Check all bans the user can see
-        return False
-    elif actionDesiredInt == 6 and int(config['default']['extras']) == 1:
-        # 6. cmyuiDiscord (Beta as fuck)
-        return False
     else:
         return 'This feature could not be found, or in unavailable.'
 
