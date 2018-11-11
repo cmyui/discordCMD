@@ -36,6 +36,7 @@ async def on_message(message):
     if config['discord']['username'] == 'cmyui': # Useless stuff only I would want lol
         if ("verify e" in message.content.lower() or
         "verification" in message.content.lower() or
+        "on email" in message.content.lower() or
         "verify m" in message.content.lower() or
         "verify a" in message.content.lower() or
         "email t" in message.content.lower()) and message.author != client.user:
