@@ -79,8 +79,7 @@ async def on_message(message):
     elif message.content.startswith('$s') and message.author == client.user:
     # Change your discord users status / game
         game = ''.join(message.content[3:]).strip() # Get the game
-
-        if game is not None: # Game also changed
+        if game: # Game also changed
 
             """
             game Variables:
@@ -91,11 +90,14 @@ async def on_message(message):
             await client.change_presence(game=discord.Game(name=game, url='https://akatsuki.pw/', type=0))
 
             print(Fore.GREEN + Style.BRIGHT + "Game changed to: {}".format(game))
+            await client.delete_message(message) # Remove $s
         else:
             print(Fore.RED + Style.BRIGHT + "Please specify a game name.")
+            await client.delete_message(message) # Remove $s
 
     elif message.content.startswith('$c') and message.author == client.user:
-    # Our little list of possibilities..
+        # Our little list of possibilities..
+        await client.delete_message(message) # Remove $c
         actionDesired = input("""\nWhat would you like to do today?
                                 \n1. Check a users permissions
                                 \n2. Send messages to a server channel
@@ -117,7 +119,7 @@ async def on_message(message):
 
             targetUserID = input('Whats their UserID?\n>> ')
             targetUser = targetServer.get_member(str(targetUserID))
-            if targetUser is not None:
+            if targetUser:
                 # The fuck is this lol
                 print("""User found. Result: {}\n
                     ------- User Perms -------\n
@@ -187,7 +189,7 @@ async def on_message(message):
             # 2. Post a message as the user (in a server)
             targetChannelID = input('\nAlright. I\'ll need the channel ID of where you\'d like to post in.\n>> ')
             targetChannel = client.get_channel(targetChannelID)
-            if targetChannel is not None:
+            if targetChannel:
                 print("Channel found; Connection established.")
 
                 x = 0 # Sorry I literally do not know how to do this properly. Maybe this is properly.. but I doubt it
@@ -200,7 +202,7 @@ async def on_message(message):
         elif actionDesiredInt == 3:
             # 3. Open PM and send a message to a user
             targetUserID = input('Whats their UserID?\n>> ')
-            if targetUserID is not None:
+            if targetUserID:
                 user = discord.User(id=targetUserID)
 
                 x = 0 # Sorry I literally do not know how to do this properly. Maybe this is properly.. but I doubt it
@@ -215,7 +217,7 @@ async def on_message(message):
         elif actionDesiredInt == 4:
             # 4. Get all info on a user possible
             targetUserID = input('Whats their UserID?\n>> ')
-            if targetUserID is not None:
+            if targetUserID:
                 user = discord.User(id=targetUserID)
                 print("User information: {}\n-----------------\nID: {}\nisBot: {}\navatar_url: {}\ncreated_at: {}\ndisplay_name: {}\n".format(user, user.id, user.bot, user.avatar_url, user.created_at, user.display_name))
 
