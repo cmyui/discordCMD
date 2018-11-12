@@ -1,4 +1,8 @@
 # No steal my token ty
 config.ini
+
 *.mp3
+
 *.wav
+
+secret/
