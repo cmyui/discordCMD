@@ -61,6 +61,7 @@ async def on_message(message):
                 else:
                     print(Fore.MAGENTA + "Aborted Trigger: Email Verification Support, due to \"badge\" contents of the message.\nUser: {}".format(message.author))
 
+    if message.author != client.user:
         if message.server is None: # Private messages
             print(Fore.YELLOW + Style.BRIGHT + "{} [{}] {}: {}".format(message.timestamp, message.channel, message.author, message.content))
         elif client.user.id in message.content: # When you are pinged
@@ -68,6 +69,9 @@ async def on_message(message):
         elif (config['discord']['username'] in message.content.lower() and len(config['discord']['username']) > 1 or
             client.user.name in message.content.lower()): # When your username is mentioned (either actual one, or custom set in configuration)
             print(Fore.GREEN + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
+            
+            # add if thing for new config here
+
         elif message.server.id in config['default']['important_servers']: # important_servers from configuration file
             if message.channel.id == '508022888113111040':
                 # Play my fucking audio file here when thats a thing
@@ -83,7 +87,10 @@ async def on_message(message):
         if config['default']['secret']:
             print("\n")
             flags = ''.join(message.content[3:]).strip() # Get the flags from discord message
-            scoreFlags.calculateFlags(int(flags))
+            if flags.isdigit():
+                scoreFlags.calculateFlags(int(flags))
+            else:
+                print(Fore.RED + "That is not a valid entry.")
         else:
             print(Fore.RED + "You do not have secret enabled in config.")
 

@@ -6,3 +6,4 @@ config.ini
 *.wav
 
 secret/
+python3
