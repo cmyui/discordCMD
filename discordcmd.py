@@ -61,7 +61,6 @@ async def on_message(message):
                 else:
                     print(Fore.MAGENTA + "Aborted Trigger: Email Verification Support, due to \"badge\" contents of the message.\nUser: {}".format(message.author))
 
-    if message.author != client.user: # Make it so you don't see your own messages :o
         if message.server is None: # Private messages
             print(Fore.YELLOW + Style.BRIGHT + "{} [{}] {}: {}".format(message.timestamp, message.channel, message.author, message.content))
         elif client.user.id in message.content: # When you are pinged
@@ -71,7 +70,7 @@ async def on_message(message):
             print(Fore.GREEN + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
         elif message.server.id in config['default']['important_servers']: # important_servers from configuration file
             if message.channel.id == '508022888113111040':
-                #play my fucking audio file here when thats a thing
+                # Play my fucking audio file here when thats a thing
                 print(Back.CYAN + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
             else:
                 print(Fore.BLUE + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
@@ -79,7 +78,8 @@ async def on_message(message):
             print("{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
 
     elif message.content.startswith('$f') and message.author == client.user:
-    # Check score flags.. in discord!
+        # Check score flags.. in discord!
+        await client.delete_message(message)  # Remove $f
         if config['default']['secret']:
             print("\n")
             flags = ''.join(message.content[3:]).strip() # Get the flags from discord message
@@ -88,7 +88,7 @@ async def on_message(message):
             print(Fore.RED + "You do not have secret enabled in config.")
 
     elif message.content.startswith('$s') and message.author == client.user:
-    # Change your discord users status / game
+        # Change your discord users status / game
         game = ''.join(message.content[3:]).strip() # Get the game
         if game: # Game also changed
 
