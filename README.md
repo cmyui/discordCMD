@@ -27,6 +27,7 @@ The default config should be pretty straight forward. If you're using a token to
 debug = 0
 tokenauth = 1
 important_servers: [2147, 483, 647]
+secret = 0
 
 [discord]
 token = token here if tokenAuth = 1

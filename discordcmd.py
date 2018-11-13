@@ -6,6 +6,7 @@ import logging
 import traceback
 from colorama import init
 from colorama import Fore, Back, Style
+from secret import scoreFlags
 
 # Initialize colorama owo
 init(autoreset=True)
@@ -17,6 +18,7 @@ client = discord.Client()
 config = configparser.ConfigParser()
 config.sections()
 config.read('config.ini')
+
 # Startup, after login action
 @client.event
 async def on_ready():
@@ -75,6 +77,15 @@ async def on_message(message):
                 print(Fore.BLUE + Style.BRIGHT + "{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
         else: # Regular message
             print("{} [{} ({})] {}: {}".format(message.timestamp, message.server, message.channel, message.author, message.content))
+
+    elif message.content.startswith('$f') and message.author == client.user:
+    # Check score flags.. in discord!
+        if config['default']['secret']:
+            print("\n")
+            flags = ''.join(message.content[3:]).strip() # Get the flags from discord message
+            scoreFlags.calculateFlags(int(flags))
+        else:
+            print(Fore.RED + "You do not have secret enabled in config.")
 
     elif message.content.startswith('$s') and message.author == client.user:
     # Change your discord users status / game
